@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnóstico de Madurez Analítica - Sector Solidario</title>
+<style>
+  :root{
+    --primary:#F8B126;
+    --dark:#252525;
+    --mid:#5d5d5d;
+    --light:#f5f6f7;
+    --line:#dedede;
+    --white:#ffffff;
+    --success:#2f855a;
+    --warning:#b7791f;
+    --danger:#c53030;
+    --blue:#2b6cb0;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:Arial, Helvetica, sans-serif;
+    color:var(--dark);
+    background:#eef0f2;
+    line-height:1.45;
+  }
+  .shell{max-width:1200px;margin:0 auto;background:var(--white);min-height:100vh;box-shadow:0 0 30px rgba(0,0,0,.08)}
+  .hero{
+    padding:42px 48px 34px;
+    background:linear-gradient(135deg,#1e1e1e,#343434);
+    color:white;
+    border-bottom:6px solid var(--primary);
+  }
+  .eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:1.6px;color:var(--primary);font-weight:700}
+  h1{margin:8px 0 12px;font-size:34px;line-height:1.12}
+  .hero p{max-width:820px;color:#e5e5e5;margin:0}
+  main{padding:36px 48px 60px}
+  h2{font-size:24px;margin:0 0 18px}
+  h3{font-size:18px;margin:0 0 12px}
+  .card{
+    background:white;border:1px solid var(--line);border-radius:14px;
+    padding:22px;margin-bottom:22px;
+  }
+  .intro-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  label.field-label{display:block;font-size:13px;font-weight:700;margin-bottom:7px}
+  input[type=text], input[type=email]{
+    width:100%;padding:12px 13px;border:1px solid #cfcfcf;border-radius:9px;
+    font-size:14px;outline:none;
+  }
+  input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(248,177,38,.16)}
+  .dimension{
+    border:1px solid var(--line);border-radius:16px;margin:28px 0;overflow:hidden;background:#fff;
+  }
+  .dimension-head{
+    background:#f2f2f2;padding:18px 22px;border-left:6px solid var(--primary);
+  }
+  .dimension-head p{margin:6px 0 0;color:#666;font-size:14px}
+  .question{padding:22px;border-top:1px solid #ececec}
+  .question:first-of-type{border-top:0}
+  .question-title{font-weight:700;margin-bottom:14px}
+  .options{display:grid;gap:10px}
+  .option{
+    display:flex;gap:10px;align-items:flex-start;padding:11px 12px;border:1px solid #ddd;
+    border-radius:9px;cursor:pointer;transition:.15s;background:#fff;
+  }
+  .option:hover{border-color:#aaa;background:#fafafa}
+  .option:has(input:checked){border-color:var(--primary);background:#fff8e8}
+  .option input{margin-top:3px;accent-color:var(--primary)}
+  .option b{min-width:18px}
+  .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+  button{
+    border:0;border-radius:9px;padding:13px 20px;font-size:14px;font-weight:700;cursor:pointer;
+  }
+  .btn-primary{background:var(--primary);color:#1f1f1f}
+  .btn-secondary{background:#333;color:white}
+  .btn-ghost{background:#efefef;color:#333}
+  .error{
+    display:none;margin-top:14px;padding:12px 14px;border-radius:8px;
+    background:#fff1f1;color:#9b2c2c;border:1px solid #f4bcbc;font-weight:700
+  }
+
+  /* Informe */
+  #report{display:none;margin-top:34px}
+  .report-cover{
+    border-radius:16px;background:linear-gradient(135deg,#222,#3b3b3b);color:white;
+    padding:34px;margin-bottom:26px;border-bottom:5px solid var(--primary);
+  }
+  .report-cover h2{font-size:30px;margin:4px 0 8px}
+  .report-meta{color:#ddd;font-size:14px}
+  .summary-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:20px;margin:20px 0}
+  .overall{
+    border:1px solid var(--line);border-radius:14px;padding:24px;background:#fff;
+  }
+  .overall .level-big{font-size:30px;font-weight:800;margin:6px 0;color:#222}
+  .score{font-size:14px;color:#666}
+  .bar{height:14px;background:#ececec;border-radius:999px;overflow:hidden;margin:14px 0 5px}
+  .bar > span{display:block;height:100%;background:var(--primary);border-radius:999px}
+  .radar-placeholder{
+    border:1px solid var(--line);border-radius:14px;padding:20px;background:#fafafa;
+  }
+  .radar-wrap{
+    width:100%;
+    min-height:340px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:6px 0 14px;
+  }
+  #radarChart{
+    width:100%;
+    max-width:520px;
+    height:340px;
+    display:block;
+  }
+  .radar-note{
+    font-size:12px;
+    color:#777;
+    text-align:center;
+    margin:-4px 0 12px;
+  }
+  .mini-row{display:grid;grid-template-columns:180px 1fr 85px;align-items:center;gap:10px;margin:10px 0}
+  .mini-row .bar{margin:0;height:10px}
+  .levels-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:18px 0 28px}
+  .level-card{border:1px solid var(--line);border-radius:12px;padding:15px;background:#fff}
+  .level-card.active{border:2px solid var(--primary);box-shadow:0 5px 14px rgba(0,0,0,.08)}
+  .level-num{font-size:12px;font-weight:800;color:#777;text-transform:uppercase}
+  .level-card h3{font-size:15px;margin:5px 0}
+  .level-range{font-size:12px;color:#7a5b12;font-weight:700;margin-bottom:8px}
+  .level-card p{font-size:12.5px;color:#555;margin:0}
+  .result-dimension{border:1px solid var(--line);border-radius:16px;margin:24px 0;overflow:hidden}
+  .result-head{padding:20px 22px;background:#f4f4f4;border-left:6px solid var(--primary)}
+  .result-head-top{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}
+  .pill{
+    display:inline-block;padding:7px 11px;background:#222;color:white;border-radius:999px;
+    white-space:nowrap;font-size:12px;font-weight:700
+  }
+  .result-body{padding:20px 22px}
+  .dimension-desc{color:#5d5d5d;margin-top:5px}
+  .recommendation{
+    margin:12px 0;border:1px solid #e1e1e1;border-radius:10px;padding:14px 15px;background:#fff;
+  }
+  .recommendation .rec-title{font-weight:700;margin-bottom:5px}
+  .recommendation .answer-tag{font-size:12px;color:#777;margin-bottom:8px}
+  .priority{
+    background:#fff7df;border-left:5px solid var(--primary);padding:15px 17px;border-radius:8px;margin:10px 0
+  }
+  .footer-note{font-size:12px;color:#777;margin-top:26px;padding-top:16px;border-top:1px solid #ddd}
+  .no-print{}
+  @media(max-width:850px){
+    .hero,main{padding-left:22px;padding-right:22px}
+    .intro-grid,.summary-grid,.levels-grid{grid-template-columns:1fr}
+    .mini-row{grid-template-columns:120px 1fr 70px}
+    .result-head-top{flex-direction:column}
+  }
+  @media print{
+    body{background:white}
+    .shell{box-shadow:none;max-width:none}
+    .hero,#evaluationForm,.no-print{display:none!important}
+    main{padding:0}
+    #report{display:block!important;margin-top:0}
+    .report-cover{border-radius:0}
+    .result-dimension,.level-card,.overall,.recommendation{break-inside:avoid}
+    .levels-grid{grid-template-columns:repeat(5,1fr)}
+    @page{size:A4;margin:12mm}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="hero">
+    <div class="eyebrow">Diagnóstico organizacional</div>
+    <h1>Matriz de Madurez Analítica<br>Sector Solidario</h1>
+    <p>Evalúe la gestión de datos, el gobierno, el uso de Business Intelligence, la incorporación de la analítica en los procesos y las capacidades del talento. Al finalizar se generará un informe automático con el nivel alcanzado y recomendaciones específicas.</p>
+  </header>
+
+  <main>
+    <form id="evaluationForm">
+      <section class="card">
+        <h2>Información de la organización</h2>
+        <div class="intro-grid">
+          <div>
+            <label class="field-label" for="company">Empresa / Entidad</label>
+            <input id="company" type="text" placeholder="Ej. Cooperativa Ejemplo" required>
+          </div>
+          <div>
+            <label class="field-label" for="respondent">Persona que diligencia</label>
+            <input id="respondent" type="text" placeholder="Nombre (opcional)">
+          </div>
+        </div>
+      </section>
+
+      <div id="questions"></div>
+
+      <div class="actions">
+        <button type="submit" class="btn-primary">Generar informe de resultados</button>
+        <button type="reset" class="btn-ghost">Limpiar respuestas</button>
+      </div>
+      <div id="error" class="error"></div>
+    </form>
+
+    <section id="report">
+      <div class="report-cover">
+        <div class="eyebrow">Resultado del diagnóstico</div>
+        <h2>Informe de Madurez Analítica</h2>
+        <div class="report-meta" id="reportMeta"></div>
+      </div>
+
+      <div class="summary-grid">
+        <div class="overall">
+          <div class="eyebrow" style="color:#8a6213">Resultado global</div>
+          <div class="level-big" id="overallLevel"></div>
+          <div class="score" id="overallScore"></div>
+          <div class="bar"><span id="overallBar"></span></div>
+          <p id="overallText"></p>
+        </div>
+        <div class="radar-placeholder">
+          <h3>Perfil de madurez por dimensión</h3>
+          <div class="radar-wrap">
+            <canvas id="radarChart" width="520" height="340" aria-label="Gráfico radar de madurez analítica"></canvas>
+          </div>
+          <div class="radar-note">Escala de madurez: 1 = Inicial · 5 = Optimizado</div>
+          <div id="dimensionBars"></div>
+        </div>
+      </div>
+
+      <section>
+        <h2>¿Qué significa cada nivel de madurez?</h2>
+        <div class="levels-grid" id="levelExplanations"></div>
+      </section>
+
+      <section>
+        <h2>Resultados y recomendaciones por dimensión</h2>
+        <div id="dimensionResults"></div>
+      </section>
+
+      <div class="actions no-print">
+        <button class="btn-primary" type="button" onclick="window.print()">Imprimir / Guardar como PDF</button>
+        <button class="btn-secondary" type="button" onclick="document.getElementById('evaluationForm').scrollIntoView({behavior:'smooth'});">Volver a la evaluación</button>
+      </div>
+
+      <div class="footer-note">
+        Este diagnóstico es una herramienta orientativa. El resultado debe complementarse con validación documental, entrevistas y revisión de procesos cuando se requiera construir una hoja de ruta de transformación analítica.
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+const levels = {
+  1: {
+    name: "Nivel 1. Inicial (ad-hoc)",
+    short: "Inicial (ad-hoc)",
+    range: "0-19%",
+    text: "La gestión de datos es principalmente manual y poco estructurada. La información está dispersa, existen problemas de calidad y las decisiones dependen en gran medida de la experiencia o intuición."
+  },
+  2: {
+    name: "Nivel 2. Definido",
+    short: "Definido",
+    range: "20-39%",
+    text: "La organización empieza a estructurar sus datos, definir indicadores y utilizar reportes periódicos, aunque aún existen procesos manuales, información fragmentada y prácticas no totalmente estandarizadas."
+  },
+  3: {
+    name: "Nivel 3. Gestionado",
+    short: "Gestionado",
+    range: "40-59%",
+    text: "Los datos están más estructurados y gobernados. Existen responsables, estándares, tableros automatizados y un uso frecuente de la información para apoyar la gestión y la toma de decisiones."
+  },
+  4: {
+    name: "Nivel 4. Integrado",
+    short: "Integrado",
+    range: "60-79%",
+    text: "La analítica está integrada con los principales procesos. Los sistemas están conectados, existe gobierno formal de datos y se utilizan análisis avanzados, alertas y capacidades predictivas."
+  },
+  5: {
+    name: "Nivel 5. Optimizado",
+    short: "Optimizado",
+    range: "80-100%",
+    text: "Los datos y la analítica son una capacidad estratégica. La organización utiliza información, automatización e IA de forma transversal y mantiene una cultura de mejora continua basada en datos."
+  }
+};
+
+const dimensions = [
+  {
+    id:"D1",
+    title:"Dimensión 1. Datos",
+    description:"Evalúa la disponibilidad, organización, calidad, confiabilidad, histórico, accesibilidad y estandarización de la información utilizada por la organización.",
+    questions:[
+      {
+        id:"D1.1",
+        title:"¿Dónde se encuentra actualmente la información necesaria para analizar la gestión de la organización?",
+        options:[
+          "Principalmente en archivos Excel, documentos, correos electrónicos y sistemas separados.",
+          "En diferentes sistemas y archivos, aunque algunas áreas consolidan periódicamente la información.",
+          "Las principales fuentes están identificadas y existe un repositorio o estructura común para analizarlas.",
+          "La mayor parte de los datos relevantes están centralizados, estructurados y disponibles para análisis avanzados.",
+          "Los datos internos y externos están gestionados como un activo corporativo y disponibles oportunamente para diferentes necesidades analíticas."
+        ],
+        recs:[
+          "La información se encuentra dispersa entre archivos, correos y diferentes sistemas, dificultando su análisis. Se recomienda que <<Empresa>> identifique e inventaríe sus principales fuentes de información y defina un repositorio común para consolidar los datos prioritarios.",
+          "Existen esfuerzos de consolidación, pero todavía dependen de archivos y actividades manuales. Se recomienda centralizar progresivamente las principales fuentes de datos y establecer una estructura común para su almacenamiento y consulta.",
+          "Las principales fuentes ya están identificadas y organizadas. Se recomienda ampliar la centralización de información, incorporar nuevas fuentes relevantes y reducir las bases de datos o repositorios aislados entre áreas.",
+          "La mayor parte de la información se encuentra centralizada y estructurada. Se recomienda fortalecer la arquitectura corporativa de datos e incorporar fuentes internas y externas que permitan análisis más avanzados y oportunos.",
+          "Los datos son gestionados como un activo corporativo. Se recomienda evaluar continuamente nuevas fuentes, tecnologías y arquitecturas que permitan incrementar el valor generado a partir de la información."
+        ]
+      },
+      {
+        id:"D1.2",
+        title:"¿Qué tan confiables son los datos utilizados para análisis y toma de decisiones?",
+        options:[
+          "Frecuentemente existen errores, duplicados, campos vacíos o diferencias entre reportes.",
+          "Algunos problemas de calidad han sido identificados y se corrigen manualmente cuando aparecen.",
+          "Existen criterios y controles establecidos para garantizar la calidad de los principales datos.",
+          "La calidad de los datos se monitorea periódicamente mediante reglas e indicadores.",
+          "La calidad se monitorea de forma continua y existen mecanismos automáticos para detectar y corregir problemas."
+        ],
+        recs:[
+          "Los errores, duplicados y diferencias entre reportes representan un riesgo para la toma de decisiones. Se recomienda identificar los principales problemas de calidad y establecer controles básicos de validación y depuración de información.",
+          "Ya se identifican problemas de calidad, aunque su corrección sigue siendo principalmente manual. Se recomienda definir reglas de calidad, responsables y procedimientos de revisión para los datos críticos.",
+          "Existen criterios y controles de calidad establecidos. Se recomienda incorporar indicadores de calidad y realizar seguimiento periódico a errores, completitud, consistencia y oportunidad de la información.",
+          "La calidad se monitorea mediante reglas e indicadores. Se recomienda automatizar la detección de anomalías y establecer mecanismos preventivos que permitan corregir los problemas desde su origen.",
+          "La calidad de datos se gestiona continuamente. Se recomienda optimizar las reglas existentes, incorporar capacidades inteligentes de detección de anomalías y revisar periódicamente los estándares de calidad de acuerdo con las nuevas necesidades del negocio."
+        ]
+      },
+      {
+        id:"D1.3",
+        title:"¿La organización cuenta con información histórica suficiente para analizar tendencias?",
+        options:[
+          "Es difícil consultar información histórica o se encuentra dispersa.",
+          "Existe información histórica para algunos procesos, pero no siempre es completa o consistente.",
+          "Las principales variables tienen históricos estructurados y confiables.",
+          "Existen históricos amplios que permiten segmentaciones y modelos predictivos.",
+          "La organización administra sistemáticamente históricos, series temporales y nuevas fuentes de información para generar conocimiento."
+        ],
+        recs:[
+          "La falta de históricos estructurados limita el análisis de tendencias y comportamientos. Se recomienda definir qué información debe conservarse y comenzar a construir históricos confiables de las variables más relevantes.",
+          "Existen históricos para algunos procesos, pero presentan diferencias o vacíos. Se recomienda establecer políticas de conservación, periodicidad y estructura para garantizar la continuidad y consistencia de los datos históricos.",
+          "Los principales datos cuentan con históricos confiables. Se recomienda ampliar la profundidad temporal y el nivel de detalle para desarrollar segmentaciones y análisis avanzados.",
+          "Los históricos permiten realizar análisis predictivos y segmentaciones. Se recomienda incorporar nuevas variables y fuentes externas que incrementen la precisión y capacidad explicativa de los modelos.",
+          "La organización gestiona sistemáticamente históricos y series temporales. Se recomienda evaluar continuamente nuevas fuentes y metodologías que permitan generar mayor conocimiento y anticipar cambios en el comportamiento de asociados y procesos."
+        ]
+      },
+      {
+        id:"D1.4",
+        title:"¿Qué tan fácil es acceder a la información necesaria para realizar un análisis?",
+        options:[
+          "Es necesario solicitar información a diferentes personas o construir archivos manualmente.",
+          "Algunos usuarios tienen acceso directo, aunque todavía requieren apoyo de otras áreas.",
+          "Los usuarios autorizados pueden consultar de forma estructurada la mayoría de los datos que necesitan.",
+          "Existen mecanismos de autoservicio para acceder de forma segura a información analítica.",
+          "Los datos están disponibles de manera oportuna y gobernada para usuarios, aplicaciones y modelos analíticos."
+        ],
+        recs:[
+          "El acceso depende de solicitudes a personas o consolidaciones manuales. Se recomienda identificar la información de mayor demanda y habilitar mecanismos básicos y controlados de consulta para los usuarios que la requieren.",
+          "Algunos usuarios cuentan con acceso directo, aunque aún existe dependencia de otras áreas. Se recomienda ampliar progresivamente el acceso mediante repositorios y herramientas institucionales, manteniendo controles de seguridad.",
+          "Los usuarios autorizados pueden consultar la mayoría de la información requerida. Se recomienda implementar herramientas de autoservicio que permitan explorar datos sin depender permanentemente de áreas técnicas.",
+          "Existen mecanismos de autoservicio seguros. Se recomienda mejorar la disponibilidad y oportunidad de los datos e integrar el acceso analítico con los procesos cotidianos de los usuarios.",
+          "Los datos están disponibles de manera oportuna y gobernada. Se recomienda monitorear patrones de uso, necesidades emergentes y nuevas tecnologías que mejoren la experiencia de acceso sin comprometer seguridad o gobierno."
+        ]
+      },
+      {
+        id:"D1.5",
+        title:"¿Qué tan estandarizados están los datos entre las diferentes áreas?",
+        options:[
+          "Cada área maneja sus propios conceptos, archivos y definiciones.",
+          "Algunos conceptos importantes han sido unificados.",
+          "Existe estandarización para los principales datos y variables institucionales.",
+          "Los estándares se aplican de manera transversal y se supervisa su cumplimiento.",
+          "Existe una arquitectura corporativa de información totalmente estandarizada y gestionada."
+        ],
+        recs:[
+          "Cada área utiliza conceptos y estructuras diferentes, generando inconsistencias. Se recomienda identificar los datos institucionales críticos y acordar definiciones comunes entre las áreas.",
+          "Algunos conceptos ya se encuentran unificados. Se recomienda ampliar la estandarización hacia las principales variables, catálogos y estructuras de información de la organización.",
+          "Los principales datos están estandarizados. Se recomienda establecer mecanismos de control para garantizar que los estándares sean utilizados transversalmente por las áreas y sistemas.",
+          "Los estándares se aplican y supervisan transversalmente. Se recomienda integrarlos formalmente dentro de la arquitectura corporativa de información y automatizar controles de cumplimiento.",
+          "Existe una arquitectura de información estandarizada. Se recomienda revisar continuamente los estándares para adaptarlos a cambios regulatorios, tecnológicos y de negocio."
+        ]
+      }
+    ]
+  },
+  {
+    id:"D3",
+    title:"Dimensión 3. Gobierno de datos",
+    description:"Evalúa la existencia de responsables, definiciones comunes, diccionarios de datos, mecanismos de calidad, privacidad, seguridad y control sobre el uso de la información.",
+    questions:[
+      {
+        id:"D3.1",
+        title:"¿Existen responsables definidos sobre los principales datos de la organización?",
+        options:[
+          "No están definidos.",
+          "Algunas personas asumen informalmente esa responsabilidad.",
+          "Existen responsables definidos para los principales dominios de información.",
+          "Existe una estructura formal de propietarios y responsables del dato.",
+          "El gobierno del dato está institucionalizado y su desempeño es monitoreado."
+        ],
+        recs:[
+          "No existen responsables claramente definidos, lo que dificulta resolver problemas y garantizar la calidad de la información. Se recomienda identificar propietarios y responsables para los principales dominios de datos.",
+          "Algunas personas asumen estas responsabilidades informalmente. Se recomienda formalizar sus funciones, alcance y responsabilidades dentro de la organización.",
+          "Existen responsables para los principales dominios. Se recomienda establecer una estructura formal de gobierno que coordine propietarios, custodios y usuarios de la información.",
+          "Existe una estructura formal de gobierno. Se recomienda establecer indicadores que permitan evaluar su desempeño y garantizar el cumplimiento de responsabilidades.",
+          "El gobierno del dato está institucionalizado. Se recomienda revisar continuamente roles, responsabilidades y mecanismos de gobierno para responder a nuevas fuentes de información y necesidades analíticas."
+        ]
+      },
+      {
+        id:"D3.2",
+        title:"¿La organización tiene definiciones comunes para sus principales indicadores?",
+        options:[
+          "Diferentes áreas pueden calcular el mismo indicador de forma distinta.",
+          "Algunos indicadores tienen definiciones acordadas.",
+          "Los principales KPIs tienen definiciones institucionales documentadas.",
+          "Existe un catálogo corporativo de indicadores y reglas de cálculo.",
+          "Indicadores, definiciones y metadatos están gobernados y actualizados sistemáticamente."
+        ],
+        recs:[
+          "Diferentes áreas pueden interpretar o calcular de manera distinta un mismo indicador. Se recomienda identificar los indicadores prioritarios y acordar definiciones, fórmulas, fuentes y responsables comunes.",
+          "Algunos indicadores cuentan con definiciones compartidas. Se recomienda documentar institucionalmente los principales KPIs y establecer reglas únicas para su cálculo.",
+          "Los principales KPIs están documentados. Se recomienda crear un catálogo corporativo que centralice definiciones, fórmulas, fuentes, periodicidades y responsables.",
+          "Existe un catálogo corporativo de indicadores. Se recomienda integrarlo con herramientas de BI y procesos de gobierno para controlar automáticamente sus definiciones y cambios.",
+          "Los indicadores y metadatos están gobernados sistemáticamente. Se recomienda revisar periódicamente su relevancia y crear nuevos indicadores alineados con la evolución estratégica de la organización."
+        ]
+      },
+      {
+        id:"D3.3",
+        title:"¿Existe un diccionario de datos?",
+        options:[
+          "No existe.",
+          "Algunas áreas tienen documentos parciales.",
+          "Existe para los datos e indicadores principales.",
+          "Existe un catálogo corporativo actualizado y gestionado.",
+          "El catálogo se integra con los sistemas de gobierno y permite conocer origen, definición, responsables y uso del dato."
+        ],
+        recs:[
+          "No existe un diccionario institucional, generando diferencias en la interpretación de la información. Se recomienda comenzar documentando los datos, campos y conceptos más críticos para la operación y análisis.",
+          "Algunas áreas poseen documentación parcial. Se recomienda consolidarla en un único diccionario institucional y priorizar los datos de mayor uso.",
+          "Existe un diccionario para los principales datos e indicadores. Se recomienda ampliar su cobertura e incorporar responsables, origen, reglas de negocio y relaciones entre datos.",
+          "Existe un catálogo corporativo actualizado. Se recomienda integrarlo con los procesos tecnológicos y herramientas de gobierno para facilitar su mantenimiento y trazabilidad.",
+          "El catálogo permite conocer integralmente origen, definición, responsabilidad y uso del dato. Se recomienda automatizar su actualización y ampliar capacidades de trazabilidad y linaje de información."
+        ]
+      },
+      {
+        id:"D3.4",
+        title:"¿Cómo se gestionan los problemas de calidad de datos?",
+        options:[
+          "Se corrigen únicamente cuando generan un problema.",
+          "Algunas áreas realizan revisiones periódicas.",
+          "Existen reglas, responsables y procesos de corrección.",
+          "Existen indicadores y monitoreo formal de calidad.",
+          "Existen mecanismos preventivos y automatizados de control y mejora continua."
+        ],
+        recs:[
+          "Los problemas se corrigen después de afectar un proceso o reporte. Se recomienda establecer un procedimiento básico para registrar, priorizar y corregir incidentes de calidad.",
+          "Algunas áreas realizan revisiones periódicas. Se recomienda definir reglas institucionales, responsables y mecanismos de seguimiento de las correcciones realizadas.",
+          "Existen reglas y procesos formales de corrección. Se recomienda crear indicadores de calidad y realizar monitoreo sistemático sobre las principales fuentes.",
+          "La calidad se monitorea formalmente. Se recomienda incorporar controles preventivos y automatizados para detectar problemas antes de que impacten los procesos.",
+          "Existen mecanismos preventivos y automatizados. Se recomienda analizar causas recurrentes, mejorar los controles en origen y utilizar analítica o IA para anticipar posibles problemas de calidad."
+        ]
+      },
+      {
+        id:"D3.5",
+        title:"¿Cómo se gestionan privacidad, seguridad y acceso a los datos?",
+        options:[
+          "Depende principalmente de permisos establecidos en cada archivo o sistema.",
+          "Existen políticas generales de seguridad.",
+          "Existen roles, permisos y procedimientos claramente definidos.",
+          "Los accesos y usos son monitoreados y auditados.",
+          "Seguridad, privacidad, trazabilidad y gobierno están incorporados integralmente en la gestión del dato."
+        ],
+        recs:[
+          "Los accesos dependen principalmente de permisos particulares en archivos o sistemas. Se recomienda definir políticas básicas de acceso, clasificación de información y responsabilidades de seguridad.",
+          "Existen políticas generales. Se recomienda establecer roles, perfiles de acceso y procedimientos específicos según el tipo y sensibilidad de los datos.",
+          "Existen roles, permisos y procedimientos definidos. Se recomienda implementar mecanismos periódicos de auditoría y monitoreo de accesos y usos de la información.",
+          "Los accesos son monitoreados y auditados. Se recomienda integrar seguridad, privacidad y trazabilidad dentro del modelo general de gobierno de datos.",
+          "Seguridad y privacidad están incorporadas integralmente en la gestión del dato. Se recomienda actualizar continuamente los controles frente a cambios regulatorios, nuevos riesgos y tecnologías emergentes."
+        ]
+      }
+    ]
+  },
+  {
+    id:"D4",
+    title:"Dimensión 4. Reportes y BI",
+    description:"Evalúa cómo se generan y actualizan los reportes, qué tan extendido está su uso y la capacidad de los usuarios para explorar, interpretar y profundizar en la información.",
+    questions:[
+      {
+        id:"D4.1",
+        title:"¿Cómo se generan actualmente los reportes de gestión?",
+        options:[
+          "Manualmente cuando son solicitados.",
+          "Existen reportes periódicos, aunque requieren consolidación manual.",
+          "Los principales reportes están automatizados.",
+          "Existen tableros interactivos con actualización frecuente y análisis avanzado.",
+          "Los tableros incorporan alertas, recomendaciones, predicciones y capacidades inteligentes."
+        ],
+        recs:[
+          "Los reportes dependen de solicitudes y procesos manuales, generando tiempos altos y riesgo de errores. Se recomienda identificar los informes recurrentes y automatizar progresivamente su generación.",
+          "Existen reportes periódicos, pero todavía requieren consolidaciones manuales. Se recomienda conectar las principales fuentes y automatizar la actualización de indicadores prioritarios.",
+          "Los principales reportes están automatizados. Se recomienda evolucionar hacia tableros interactivos que permitan analizar tendencias, causas y comportamientos.",
+          "Existen tableros interactivos y análisis avanzados. Se recomienda incorporar alertas, predicciones y recomendaciones que permitan anticipar riesgos y oportunidades.",
+          "Los tableros incorporan capacidades inteligentes. Se recomienda medir continuamente su uso e impacto y explorar nuevas capacidades de IA, analítica prescriptiva y generación automática de insights."
+        ]
+      },
+      {
+        id:"D4.3",
+        title:"¿Qué tan automatizada está la actualización de los tableros?",
+        options:[
+          "Los datos se cargan manualmente.",
+          "Parte de la información se actualiza automáticamente.",
+          "Los principales tableros se actualizan automáticamente.",
+          "La mayoría de los tableros están conectados directamente a fuentes actualizadas.",
+          "La información se actualiza continuamente y puede generar alertas o acciones automáticas."
+        ],
+        recs:[
+          "La actualización manual consume tiempo y aumenta el riesgo de inconsistencias. Se recomienda automatizar inicialmente las fuentes y tableros de mayor impacto para la gestión.",
+          "Parte de la información se actualiza automáticamente. Se recomienda ampliar la automatización hacia los principales reportes institucionales y eliminar cargas manuales repetitivas.",
+          "Los principales tableros se actualizan automáticamente. Se recomienda conectar directamente nuevas fuentes y reducir los procesos intermedios de transformación manual.",
+          "La mayoría de los tableros están conectados directamente a fuentes actualizadas. Se recomienda avanzar hacia actualización más frecuente y generación automática de alertas.",
+          "La información se actualiza continuamente y puede activar acciones. Se recomienda optimizar los flujos de información, monitorear su desempeño y evaluar nuevos casos donde la analítica pueda integrarse directamente con procesos operativos."
+        ]
+      },
+      {
+        id:"D4.4",
+        title:"¿Quién utiliza los tableros analíticos?",
+        options:[
+          "Principalmente algunas personas que preparan reportes.",
+          "Algunos líderes y áreas específicas.",
+          "Directivos y diferentes áreas los utilizan regularmente.",
+          "La mayoría de las áreas cuentan con herramientas analíticas adaptadas a sus procesos.",
+          "Los datos y análisis forman parte natural de la operación diaria de toda la organización."
+        ],
+        recs:[
+          "Los reportes están concentrados en pocas personas. Se recomienda ampliar el acceso y desarrollar tableros sencillos orientados a las necesidades de líderes y áreas prioritarias.",
+          "Algunos líderes y áreas utilizan tableros. Se recomienda extender su utilización y establecer rutinas de seguimiento de indicadores dentro de reuniones y procesos de gestión.",
+          "Directivos y diferentes áreas utilizan regularmente los tableros. Se recomienda desarrollar soluciones específicas para los principales procesos y fortalecer el autoservicio analítico.",
+          "La mayoría de las áreas cuentan con herramientas analíticas. Se recomienda integrar cada vez más los tableros con la operación y personalizar la información según los roles de los usuarios.",
+          "Los datos forman parte natural de la operación diaria. Se recomienda evaluar continuamente adopción, experiencia de usuario y valor generado para simplificar herramientas e incorporar nuevas capacidades analíticas."
+        ]
+      },
+      {
+        id:"D4.5",
+        title:"¿Qué tan fácil es profundizar en un indicador?",
+        options:[
+          "Se necesita solicitar un nuevo reporte.",
+          "Algunos reportes permiten realizar filtros básicos.",
+          "Los usuarios pueden explorar información por períodos, productos, segmentos, regiones u otras variables.",
+          "Los usuarios pueden identificar patrones, causas y alertas mediante análisis avanzado.",
+          "La plataforma sugiere automáticamente causas, anomalías, escenarios y acciones."
+        ],
+        recs:[
+          "Para analizar un indicador es necesario solicitar nuevos reportes. Se recomienda habilitar filtros y niveles básicos de detalle que permitan a los usuarios realizar análisis sencillos de forma autónoma.",
+          "Los reportes permiten algunos filtros básicos. Se recomienda incorporar navegación por dimensiones como período, producto, asociado, segmento, oficina o región.",
+          "Los usuarios pueden explorar diferentes dimensiones de información. Se recomienda incorporar análisis de causas, patrones y alertas que faciliten la interpretación de los resultados.",
+          "Los usuarios pueden identificar patrones y causas mediante análisis avanzado. Se recomienda incorporar modelos que detecten automáticamente anomalías, relaciones y escenarios probables.",
+          "La plataforma sugiere causas, anomalías y acciones. Se recomienda mejorar continuamente los modelos y personalizar los insights de acuerdo con el perfil y las decisiones que debe tomar cada usuario."
+        ]
+      }
+    ]
+  },
+  {
+    id:"D6",
+    title:"Dimensión 6. Procesos y toma de decisiones",
+    description:"Evalúa el peso real que tienen los datos en las decisiones de la organización y el grado en que la analítica está incorporada dentro de los procesos de gestión y operación.",
+    questions:[
+      {
+        id:"D6.1",
+        title:"¿Qué peso tienen los datos en las decisiones importantes?",
+        options:[
+          "Predomina la experiencia o intuición.",
+          "Se revisan algunos indicadores antes de tomar decisiones.",
+          "Las principales decisiones de gestión se sustentan regularmente con información.",
+          "Las decisiones combinan indicadores, análisis avanzado y predicciones.",
+          "La toma de decisiones está sistemáticamente basada en datos, modelos y medición de resultados."
+        ],
+        recs:[
+          "Las decisiones dependen principalmente de experiencia e intuición. Se recomienda identificar las principales decisiones de gestión y definir indicadores que permitan sustentarlas con información objetiva.",
+          "Se consultan algunos indicadores antes de tomar decisiones. Se recomienda estandarizar qué información debe revisarse en las decisiones relevantes y garantizar su disponibilidad y confiabilidad.",
+          "Las principales decisiones se sustentan regularmente con información. Se recomienda incorporar análisis de tendencias, escenarios y variables adicionales que permitan mejorar su calidad.",
+          "Las decisiones combinan indicadores, análisis avanzado y predicciones. Se recomienda implementar mecanismos para medir el resultado de las decisiones y utilizar modelos de recomendación en procesos prioritarios.",
+          "La toma de decisiones está sistemáticamente basada en datos y modelos. Se recomienda optimizar continuamente los modelos, medir su impacto y promover experimentación controlada para identificar mejores alternativas de acción."
+        ]
+      },
+      {
+        id:"D6.5",
+        title:"¿Hasta qué punto la analítica está incorporada dentro de los procesos?",
+        options:[
+          "Se utiliza principalmente para reportar.",
+          "Apoya algunos procesos específicos.",
+          "Hace parte habitual de varios procesos de gestión.",
+          "Genera alertas y recomendaciones dentro de procesos críticos.",
+          "Está integrada directamente en los procesos y soporta o automatiza determinadas decisiones."
+        ],
+        recs:[
+          "La analítica se utiliza principalmente para reportar lo ocurrido. Se recomienda identificar procesos prioritarios donde la información pueda utilizarse para mejorar decisiones, tiempos o resultados.",
+          "La analítica apoya algunos procesos específicos. Se recomienda ampliar su utilización e incorporar indicadores y análisis dentro de los principales flujos de trabajo.",
+          "La analítica forma parte habitual de varios procesos. Se recomienda incorporar alertas y reglas que permitan anticipar desviaciones y orientar acciones.",
+          "La analítica genera alertas y recomendaciones en procesos críticos. Se recomienda integrar los modelos directamente con las plataformas operativas para ejecutar o sugerir acciones de manera automática.",
+          "La analítica está integrada y soporta o automatiza decisiones. Se recomienda evaluar continuamente el desempeño de las automatizaciones, mantener supervisión y controles adecuados y explorar nuevos casos de analítica prescriptiva e IA."
+        ]
+      }
+    ]
+  },
+  {
+    id:"D7",
+    title:"Dimensión 7. Talento y cultura analítica",
+    description:"Evalúa las competencias de los colaboradores para interpretar y utilizar datos, así como la existencia de programas de formación y una cultura organizacional orientada a la analítica.",
+    questions:[
+      {
+        id:"D7.1",
+        title:"¿Qué nivel de conocimiento tienen los colaboradores sobre análisis de datos?",
+        options:[
+          "Muy limitado y concentrado en pocas personas.",
+          "Algunos colaboradores manejan Excel, reportes o herramientas básicas.",
+          "Diferentes áreas cuentan con personas capaces de interpretar y utilizar información analítica.",
+          "Existen capacidades avanzadas de BI, analítica o ciencia de datos.",
+          "El conocimiento analítico está ampliamente distribuido y existen perfiles especializados y programas permanentes de desarrollo."
+        ],
+        recs:[
+          "El conocimiento está concentrado en pocas personas y existe una alta dependencia de ellas. Se recomienda identificar las brechas de competencias y desarrollar formación básica en lectura de indicadores, calidad de datos y herramientas de análisis.",
+          "Algunos colaboradores manejan Excel, reportes o herramientas básicas. Se recomienda ampliar estas capacidades hacia diferentes áreas mediante programas estructurados de formación en datos y BI.",
+          "Diferentes áreas cuentan con personas capaces de interpretar información analítica. Se recomienda desarrollar competencias avanzadas y crear perfiles especializados que apoyen iniciativas de mayor complejidad.",
+          "Existen capacidades avanzadas de BI, analítica o ciencia de datos. Se recomienda ampliar estas competencias transversalmente y fortalecer la colaboración entre especialistas y áreas de negocio.",
+          "El conocimiento analítico está ampliamente distribuido. Se recomienda mantener programas permanentes de actualización, incorporar nuevas competencias en IA y analítica avanzada y crear comunidades internas de conocimiento."
+        ]
+      },
+      {
+        id:"D7.2",
+        title:"¿La organización capacita a sus colaboradores en datos y analítica?",
+        options:[
+          "No existe capacitación específica.",
+          "Se realizan capacitaciones ocasionales.",
+          "Existen programas periódicos de formación.",
+          "Existen rutas diferenciadas según los roles y niveles de conocimiento.",
+          "Existe una estrategia continua de alfabetización de datos y actualización en analítica e IA."
+        ],
+        recs:[
+          "No existe capacitación específica. Se recomienda desarrollar un programa inicial de alfabetización de datos dirigido a colaboradores y líderes de las áreas prioritarias.",
+          "Se realizan capacitaciones ocasionales. Se recomienda estructurar un plan periódico de formación con objetivos, contenidos y perfiles de participantes claramente definidos.",
+          "Existen programas periódicos de formación. Se recomienda diseñar rutas diferenciadas según roles, responsabilidades y nivel de conocimiento de los colaboradores.",
+          "Existen rutas diferenciadas de formación. Se recomienda incorporarlas dentro de los planes de desarrollo del talento y actualizar contenidos en analítica avanzada, automatización e IA.",
+          "Existe una estrategia continua de alfabetización de datos. Se recomienda medir el impacto de la formación, actualizar permanentemente las rutas y alinear las nuevas competencias con la estrategia de datos y analítica de <<Empresa>>."
+        ]
+      }
+    ]
+  }
+];
+
+
+const dimensionRecommendations = {
+  "D1": {
+    1: "Se recomienda que <<Empresa>> comience por identificar, inventariar y organizar sus principales fuentes de información, priorizando los datos más relevantes para la gestión. Es importante reducir la dispersión de archivos, establecer controles básicos de calidad y depuración, construir históricos confiables, facilitar el acceso controlado a la información y acordar definiciones comunes entre las diferentes áreas.",
+    2: "Se recomienda que <<Empresa>> avance en la centralización y estandarización de sus principales fuentes de datos, reduciendo progresivamente las consolidaciones manuales. También debe formalizar reglas de calidad, fortalecer la construcción de históricos, ampliar el acceso estructurado para los usuarios autorizados y establecer estándares comunes para variables, catálogos y conceptos institucionales.",
+    3: "Se recomienda que <<Empresa>> fortalezca la gestión estructurada de sus datos mediante una mayor centralización, monitoreo periódico de calidad, ampliación de históricos y mecanismos de autoservicio para los usuarios. Asimismo, debe consolidar los estándares de información entre áreas y preparar sus datos para soportar análisis más avanzados, segmentaciones y nuevos casos de uso analítico.",
+    4: "Se recomienda que <<Empresa>> continúe evolucionando su arquitectura de datos, incorporando nuevas fuentes internas y externas, automatizando controles de calidad y mejorando la disponibilidad oportuna de la información. También debe fortalecer el autoservicio gobernado y asegurar que los estándares de datos se apliquen transversalmente para soportar analítica avanzada y modelos predictivos.",
+    5: "Se recomienda que <<Empresa>> mantenga una gestión continua de los datos como activo estratégico, revisando periódicamente la calidad, disponibilidad, estandarización y utilidad de la información. La prioridad debe estar en incorporar nuevas fuentes de valor, optimizar la arquitectura existente y adoptar tecnologías que permitan obtener mayor conocimiento y mejorar continuamente las capacidades analíticas."
+  },
+  "D3": {
+    1: "Se recomienda que <<Empresa>> establezca las bases de un modelo de gobierno de datos, comenzando por definir responsables para los principales dominios de información, acordar definiciones comunes para los indicadores y documentar los datos críticos. También es necesario establecer reglas básicas de calidad, acceso, privacidad y seguridad que permitan reducir inconsistencias y mejorar el control sobre la información.",
+    2: "Se recomienda que <<Empresa>> formalice los responsables y lineamientos que actualmente se gestionan de manera parcial o informal. Es conveniente documentar los principales indicadores, consolidar un diccionario institucional de datos, definir reglas de calidad y establecer perfiles de acceso según el tipo y sensibilidad de la información.",
+    3: "Se recomienda que <<Empresa>> consolide un modelo formal de gobierno de datos que integre propietarios, responsables, estándares, catálogo de indicadores, diccionario de datos y procesos de calidad. Además, debe incorporar mecanismos periódicos de auditoría, monitoreo de accesos y seguimiento a la calidad de las principales fuentes de información.",
+    4: "Se recomienda que <<Empresa>> integre plenamente el gobierno de datos con sus procesos tecnológicos y analíticos, fortaleciendo la trazabilidad, el monitoreo de calidad, la seguridad y la privacidad. También debe avanzar hacia controles preventivos y automatizados, así como mecanismos que permitan evaluar el desempeño del gobierno de datos y sus responsables.",
+    5: "Se recomienda que <<Empresa>> mantenga un modelo de gobierno de datos dinámico y en mejora continua, revisando periódicamente roles, políticas, estándares, indicadores y controles. La organización debe fortalecer la automatización del gobierno, la trazabilidad y el linaje de los datos, así como actualizar sus prácticas frente a nuevos riesgos, regulaciones y tecnologías."
+  },
+  "D4": {
+    1: "Se recomienda que <<Empresa>> reduzca la dependencia de reportes manuales, identificando los informes e indicadores de mayor uso para automatizar progresivamente su generación y actualización. También es conveniente ampliar el acceso a información básica y habilitar capacidades sencillas de consulta y filtrado para los usuarios.",
+    2: "Se recomienda que <<Empresa>> continúe automatizando los reportes periódicos y conectando las principales fuentes de información. Debe ampliar el uso de tableros entre líderes y áreas, incorporar filtros y niveles de detalle que faciliten el análisis y establecer rutinas de seguimiento de indicadores dentro de los procesos de gestión.",
+    3: "Se recomienda que <<Empresa>> evolucione sus tableros automatizados hacia herramientas más interactivas y orientadas al análisis de tendencias, causas y comportamientos. También debe fortalecer el autoservicio analítico, ampliar el uso de BI en diferentes áreas e incorporar nuevas fuentes que permitan profundizar en los indicadores sin depender de solicitudes adicionales.",
+    4: "Se recomienda que <<Empresa>> incorpore capacidades más avanzadas en sus soluciones de BI, como alertas, identificación de patrones, análisis de causas y modelos predictivos. Además, debe integrar los tableros cada vez más con la operación y personalizar la información según los roles y necesidades de los usuarios.",
+    5: "Se recomienda que <<Empresa>> mantenga una estrategia de mejora continua sobre sus capacidades de BI, midiendo el uso, adopción e impacto de los tableros. La prioridad debe estar en incorporar analítica prescriptiva, inteligencia artificial, generación automática de hallazgos y nuevas formas de integrar la información directamente con los procesos operativos."
+  },
+  "D6": {
+    1: "Se recomienda que <<Empresa>> identifique las decisiones y procesos más relevantes donde los datos puedan aportar valor, definiendo indicadores básicos que permitan reducir la dependencia de la intuición. La analítica debe comenzar a utilizarse no solo para reportar lo ocurrido, sino también para orientar acciones concretas de gestión.",
+    2: "Se recomienda que <<Empresa>> estandarice el uso de indicadores en las decisiones relevantes e incorpore la analítica en más procesos de la organización. Es importante garantizar que la información utilizada sea confiable y esté disponible oportunamente, así como establecer rutinas de análisis dentro de los principales flujos de trabajo.",
+    3: "Se recomienda que <<Empresa>> profundice el uso de datos en la toma de decisiones mediante análisis de tendencias, escenarios y variables adicionales. También debe incorporar alertas y reglas que permitan anticipar desviaciones, riesgos u oportunidades dentro de los principales procesos de gestión.",
+    4: "Se recomienda que <<Empresa>> integre progresivamente los modelos analíticos con los sistemas y procesos operativos, utilizando predicciones y recomendaciones para orientar decisiones en procesos críticos. También debe medir los resultados obtenidos y evaluar dónde es conveniente automatizar determinadas acciones.",
+    5: "Se recomienda que <<Empresa>> mantenga una gestión basada sistemáticamente en datos y modelos, midiendo de forma continua el impacto de las decisiones y automatizaciones. La organización debe optimizar sus modelos, promover la experimentación controlada y explorar nuevos casos de analítica prescriptiva e inteligencia artificial."
+  },
+  "D7": {
+    1: "Se recomienda que <<Empresa>> identifique las principales brechas de conocimiento en datos y analítica y desarrolle un programa inicial de alfabetización dirigido a colaboradores y líderes. La prioridad debe estar en fortalecer competencias básicas de interpretación de indicadores, calidad de datos y uso de herramientas de análisis.",
+    2: "Se recomienda que <<Empresa>> estructure un plan periódico de formación en datos y analítica, ampliando las capacidades más allá de los usuarios que actualmente manejan Excel o reportes básicos. Es conveniente definir contenidos, perfiles de participantes y objetivos de aprendizaje según las necesidades de las diferentes áreas.",
+    3: "Se recomienda que <<Empresa>> evolucione hacia rutas de formación diferenciadas según roles y responsabilidades, desarrollando capacidades avanzadas en BI, análisis de datos y uso de información para la toma de decisiones. También debe fortalecer perfiles especializados que apoyen iniciativas analíticas de mayor complejidad.",
+    4: "Se recomienda que <<Empresa>> consolide las competencias analíticas como una capacidad transversal, fortaleciendo la colaboración entre especialistas y áreas de negocio. Las rutas de formación deben incorporarse a los planes de desarrollo del talento e incluir temas de analítica avanzada, automatización e inteligencia artificial.",
+    5: "Se recomienda que <<Empresa>> mantenga una estrategia continua de desarrollo de capacidades en datos, analítica e inteligencia artificial, midiendo el impacto de la formación y actualizando permanentemente las rutas de aprendizaje. También es conveniente promover comunidades internas de conocimiento y mecanismos de intercambio de buenas prácticas."
+  }
+};
+
+function drawRadar(results){
+  const canvas = document.getElementById("radarChart");
+  if(!canvas) return;
+
+  const rect = canvas.getBoundingClientRect();
+  const cssWidth = Math.max(360, rect.width || 520);
+  const cssHeight = 340;
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.width = Math.round(cssWidth * dpr);
+  canvas.height = Math.round(cssHeight * dpr);
+  canvas.style.height = cssHeight + "px";
+
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,cssWidth,cssHeight);
+
+  const cx = cssWidth / 2;
+  const cy = cssHeight / 2 + 4;
+  const radius = Math.min(cssWidth * 0.30, 112);
+  const count = results.length;
+  const startAngle = -Math.PI/2;
+
+  const labels = results.map(r =>
+    r.dimension.title
+      .replace(/Dimensión \d+\.\s*/,"")
+      .replace("Procesos y toma de decisiones","Procesos y decisiones")
+      .replace("Talento y cultura analítica","Talento y cultura")
+  );
+
+  function point(index, value){
+    const angle = startAngle + (Math.PI*2*index/count);
+    const r = radius * (value/5);
+    return [cx + Math.cos(angle)*r, cy + Math.sin(angle)*r];
+  }
+
+  // Grid levels 1..5
+  for(let level=1; level<=5; level++){
+    ctx.beginPath();
+    for(let i=0; i<count; i++){
+      const [x,y] = point(i, level);
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = level===5 ? "#bdbdbd" : "#dedede";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // Axes
+  for(let i=0; i<count; i++){
+    const [x,y] = point(i,5);
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(x,y);
+    ctx.strokeStyle="#d2d2d2";
+    ctx.lineWidth=1;
+    ctx.stroke();
+  }
+
+  // Scale labels
+  ctx.font="11px Arial";
+  ctx.fillStyle="#777";
+  ctx.textAlign="left";
+  ctx.textBaseline="middle";
+  for(let level=1; level<=5; level++){
+    const y = cy - radius*(level/5);
+    ctx.fillText(String(level), cx+5, y);
+  }
+
+  // Data polygon
+  ctx.beginPath();
+  results.forEach((r,i)=>{
+    const [x,y] = point(i,r.score);
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.closePath();
+  ctx.fillStyle="rgba(248,177,38,0.24)";
+  ctx.fill();
+  ctx.strokeStyle="#F8B126";
+  ctx.lineWidth=3;
+  ctx.stroke();
+
+  // Points
+  results.forEach((r,i)=>{
+    const [x,y] = point(i,r.score);
+    ctx.beginPath();
+    ctx.arc(x,y,4.5,0,Math.PI*2);
+    ctx.fillStyle="#2b2b2b";
+    ctx.fill();
+    ctx.strokeStyle="#F8B126";
+    ctx.lineWidth=2;
+    ctx.stroke();
+  });
+
+  // Axis labels
+  ctx.font="bold 12px Arial";
+  ctx.fillStyle="#333";
+  labels.forEach((label,i)=>{
+    const angle = startAngle + (Math.PI*2*i/count);
+    const labelRadius = radius + 38;
+    let x = cx + Math.cos(angle)*labelRadius;
+    let y = cy + Math.sin(angle)*labelRadius;
+
+    const words = label.split(" ");
+    const lines = [];
+    let current="";
+    words.forEach(w=>{
+      const test=(current+" "+w).trim();
+      if(ctx.measureText(test).width > 105 && current){
+        lines.push(current);
+        current=w;
+      } else {
+        current=test;
+      }
+    });
+    if(current) lines.push(current);
+
+    if(Math.cos(angle) > .25) ctx.textAlign="left";
+    else if(Math.cos(angle) < -.25) ctx.textAlign="right";
+    else ctx.textAlign="center";
+
+    ctx.textBaseline="middle";
+    lines.forEach((line,idx)=>{
+      ctx.fillText(line, x, y + (idx-(lines.length-1)/2)*14);
+    });
+  });
+}
+
+function renderQuestions(){
+  const holder = document.getElementById("questions");
+  holder.innerHTML = dimensions.map(dim => `
+    <section class="dimension">
+      <div class="dimension-head">
+        <h2>${dim.title}</h2>
+        <p>${dim.description}</p>
+      </div>
+      ${dim.questions.map(q => `
+        <div class="question">
+          <div class="question-title">${q.id} ${q.title}</div>
+          <div class="options">
+            ${q.options.map((opt,i)=>`
+              <label class="option">
+                <input type="radio" name="${q.id}" value="${i+1}" required>
+                <b>${String.fromCharCode(65+i)}.</b>
+                <span>${opt}</span>
+              </label>
+            `).join("")}
+          </div>
+        </div>
+      `).join("")}
+    </section>
+  `).join("");
+}
+
+function getLevel(score){
+  if(score < 1.5) return 1;
+  if(score < 2.5) return 2;
+  if(score < 3.5) return 3;
+  if(score < 4.5) return 4;
+  return 5;
+}
+
+function scoreToVisualPct(score){
+  return Math.max(0, Math.min(100, ((score - 0.5) / 5) * 100));
+}
+
+function replaceCompany(text, company){
+  return text.replaceAll("<<Empresa>>", company);
+}
+
+function renderLevelExplanations(activeLevel){
+  document.getElementById("levelExplanations").innerHTML = Object.entries(levels).map(([n,l])=>`
+    <article class="level-card ${Number(n)===activeLevel?'active':''}">
+      <div class="level-num">Nivel ${n}</div>
+      <h3>${l.short}</h3>
+      <div class="level-range">Rango porcentual: ${l.range}</div>
+      <p>${l.text}</p>
+    </article>
+  `).join("");
+}
+
+document.getElementById("evaluationForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  const error = document.getElementById("error");
+  error.style.display="none";
+
+  const company = document.getElementById("company").value.trim();
+  const respondent = document.getElementById("respondent").value.trim();
+  const results = [];
+  let unanswered = [];
+
+  dimensions.forEach(dim=>{
+    let total = 0;
+    const answerDetails = [];
+    dim.questions.forEach(q=>{
+      const chosen = document.querySelector(`input[name="${q.id}"]:checked`);
+      if(!chosen){
+        unanswered.push(q.id);
+        return;
+      }
+      const value = Number(chosen.value);
+      total += value;
+      answerDetails.push({
+        question:q,
+        value,
+        answer:q.options[value-1],
+        recommendation:q.recs[value-1]
+      });
+    });
+    if(answerDetails.length === dim.questions.length){
+      const score = total / dim.questions.length;
+      results.push({
+        dimension:dim,
+        score,
+        level:getLevel(score),
+        answers:answerDetails
+      });
+    }
+  });
+
+  if(unanswered.length){
+    error.textContent = "Faltan respuestas en: " + unanswered.join(", ") + ".";
+    error.style.display="block";
+    error.scrollIntoView({behavior:"smooth",block:"center"});
+    return;
+  }
+
+  // Cada dimensión tiene el mismo peso, independientemente del número de preguntas.
+  const overallScore = results.reduce((a,r)=>a+r.score,0)/results.length;
+  const overallLevel = getLevel(overallScore);
+  window.__lastRadarResults = results;
+
+  const now = new Date();
+  const date = now.toLocaleDateString("es-CO",{year:"numeric",month:"long",day:"numeric"});
+  document.getElementById("reportMeta").textContent =
+    `${company}${respondent ? " | Responsable: "+respondent : ""} | Fecha: ${date}`;
+
+  document.getElementById("overallLevel").textContent = levels[overallLevel].name;
+  document.getElementById("overallScore").textContent =
+    `Índice global: ${overallScore.toFixed(2)} de 5,00 · Cada dimensión tiene el mismo peso en el resultado final.`;
+  document.getElementById("overallBar").style.width = scoreToVisualPct(overallScore)+"%";
+  document.getElementById("overallText").textContent = levels[overallLevel].text;
+
+  document.getElementById("dimensionBars").innerHTML = results.map(r=>`
+    <div class="mini-row">
+      <div>${r.dimension.title.replace(/Dimensión \d+\.\s*/,"")}</div>
+      <div class="bar"><span style="width:${scoreToVisualPct(r.score)}%"></span></div>
+      <strong>${r.score.toFixed(2)} / 5</strong>
+    </div>
+  `).join("");
+
+  // Dibuja el gráfico radar con un eje por cada dimensión evaluada.
+  requestAnimationFrame(() => drawRadar(results));
+
+  renderLevelExplanations(overallLevel);
+
+  document.getElementById("dimensionResults").innerHTML = results.map(r=>`
+    <article class="result-dimension">
+      <div class="result-head">
+        <div class="result-head-top">
+          <div>
+            <h3>${r.dimension.title}</h3>
+            <div class="dimension-desc">${r.dimension.description}</div>
+          </div>
+          <div class="pill">${levels[r.level].name}</div>
+        </div>
+        <div style="margin-top:12px"><strong>Puntaje de la dimensión:</strong> ${r.score.toFixed(2)} / 5,00</div>
+      </div>
+      <div class="result-body">
+        <p><strong>Interpretación del resultado:</strong> ${levels[r.level].text}</p>
+        <h3>Recomendaciones</h3>
+        <div class="recommendation">
+          <div>${replaceCompany(dimensionRecommendations[r.dimension.id][r.level], company)}</div>
+        </div>
+        <div class="priority">
+          <strong>Orientación de avance:</strong>
+          ${r.level < 5
+            ? `El enfoque recomendado es consolidar estas acciones para avanzar desde ${levels[r.level].name} hacia ${levels[r.level+1].name}.`
+            : `La organización se encuentra en un nivel optimizado en esta dimensión; el enfoque debe ser mantener la mejora continua e incorporar innovaciones que generen valor medible.`}
+        </div>
+      </div>
+    </article>
+  `).join("");
+
+  document.getElementById("report").style.display="block";
+  document.getElementById("report").scrollIntoView({behavior:"smooth",block:"start"});
+});
+
+document.getElementById("evaluationForm").addEventListener("reset",()=>{
+  setTimeout(()=>{
+    document.getElementById("report").style.display="none";
+    document.getElementById("error").style.display="none";
+  },0);
+});
+
+
+let radarResizeTimer;
+window.addEventListener("resize", ()=>{
+  clearTimeout(radarResizeTimer);
+  radarResizeTimer = setTimeout(()=>{
+    const report = document.getElementById("report");
+    if(report && report.style.display !== "none"){
+      const currentResults = window.__lastRadarResults;
+      if(currentResults) drawRadar(currentResults);
+    }
+  },150);
+});
+
+renderQuestions();
+</script>
+</body>
+</html>
